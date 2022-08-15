@@ -1,6 +1,7 @@
 package br.com.cronos.redesocial.api;
 
 import br.com.cronos.redesocial.api.dto.CreateUserRequest;
+import br.com.cronos.redesocial.api.dto.ResponseError;
 import br.com.cronos.redesocial.domain.model.User;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 
@@ -30,9 +31,9 @@ public class UserResource {
     public Response createUser( CreateUserRequest userRequest) {
         Set<ConstraintViolation<CreateUserRequest>> violations = validator.validate(userRequest);
         if (!violations.isEmpty()) {
-            ConstraintViolation<CreateUserRequest> erro = violations.stream().findAny().get();
-            String errorMessage = erro.getMessage();
-            return Response.status(400).entity(errorMessage).build();
+            return ResponseError
+                    .createFromValidation(violations)
+                    .withStatusCode(ResponseError.UNPROCESSABLE_ENTITY_STATUS);
         }
 
         User user = new User();
@@ -41,7 +42,7 @@ public class UserResource {
 
         user.persist();
 
-        return Response.ok(user).build();
+        return Response.status(Response.Status.CREATED.getStatusCode()).entity(user).build();
     }
 
     @GET
@@ -58,7 +59,7 @@ public class UserResource {
 
         if (user != null) {
             user.delete();
-            return Response.ok().build();
+            return Response.noContent().build();
         }
         return Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -73,7 +74,7 @@ public class UserResource {
             user.setName(userData.getName());
             user.setAge(userData.getAge());
 
-            return Response.ok().build();
+            return Response.noContent().build();
         }
         return Response.status(Response.Status.NOT_FOUND).build();
     }

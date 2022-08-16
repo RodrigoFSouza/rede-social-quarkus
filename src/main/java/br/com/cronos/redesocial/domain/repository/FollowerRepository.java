@@ -16,7 +16,7 @@ public class FollowerRepository implements PanacheRepository<Follower> {
 
         Map<String, Object> params = Parameters.with("follower", follower).and("user", user).map();
 
-        PanacheQuery<Follower> query = find("follower = :follwer and user = :user", params);
+        PanacheQuery<Follower> query = find("follower = :follower and user = :user", params);
 
         Optional<Follower> result = query.firstResultOptional();
 

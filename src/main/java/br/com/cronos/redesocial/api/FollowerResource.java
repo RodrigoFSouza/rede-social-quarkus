@@ -87,4 +87,22 @@ public class FollowerResource {
 
         return Response.ok(responseObject).build();
     }
+
+    @DELETE
+    @Transactional
+    public Response unfollowerUser(@PathParam("userId") Long userId,
+                                   @QueryParam("followerId") Long followerId) {
+        var user = userRepository.findById(userId);
+
+        if (user == null) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity("User not found of id " + userId)
+                    .build();
+        }
+
+        followerRepository.deleteByFollowerAndUser(followerId, userId);
+
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
 }

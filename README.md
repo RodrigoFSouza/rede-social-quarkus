@@ -1,62 +1,58 @@
-# rede-social Project
+# Projeto criando uma Rede Social em Quarkus
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Projeto feito em Quarkus, simula uma pequena rede social.
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+## Tecnologias utilizadas
+1. Java 17
+2. Quarkus
+3. Panache
+4. RestEasy
+5. JsonB
+6. Postgresql
+7. Lombok
 
-## Running the application in dev mode
+Para saber mais sobre quarkus visiste: https://quarkus.io/ .
 
-You can run your application in dev mode that enables live coding using:
+## Executar o projeto em modo Desenvolvimento
+
+Para executar o projeto em modo dev, no terminal execute:
 
 ```shell script
 ./mvnw compile quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+> **_NOTE:_**  Para acessar a Dev UI do quarkus http://localhost:8080/q/dev/.
 
-## Packaging and running the application
+## Empacotando e executando a aplicação
 
-The application can be packaged using:
+Use esse comando para empacotar a aplicação:
 
 ```shell script
 ./mvnw package
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Vá até a pasta `target/quarkus-app/`.
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
 
 ```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
+./mvnw package -Dquarkus.package.type=rede-social-1.0-jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+Execute então a aplicação `java -jar target/*-runner.jar`.
 
-## Creating a native executable
+## Criando uma executavel nativo 
 
-You can create a native executable using:
+Para criar um executável nativo use este comando:
 
 ```shell script
 ./mvnw package -Pnative
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+Ou caso tenha a GraalVm instalada:
 
 ```shell script
 ./mvnw package -Pnative -Dquarkus.native.container-build=true
 ```
 
-You can then execute your native executable with: `./target/rede-social-1.0-SNAPSHOT-runner`
+Para executar a aplicação nativa faça: `./target/rede-social-1.0-SNAPSHOT-runner`
 
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
-
-## Provided Code
-
-### RESTEasy Reactive
-
-Easily start your Reactive RESTful Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)

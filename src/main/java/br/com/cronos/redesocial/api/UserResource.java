@@ -14,6 +14,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Set;
 
+import static java.util.Objects.isNull;
+
 @Path("/api/v1/users")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,6 +26,35 @@ public class UserResource {
     @Inject
     public UserResource(Validator validator) {
         this.validator = validator;
+    }
+
+    @GET
+    public Response listAllUsers() {
+        PanacheQuery<User> query = User.findAll();
+        return Response.ok(query.list()).build();
+    }
+
+    @GET
+    @Path("/{id}")
+    public Response get(@PathParam("id") Long id) {
+        User user = User.findById(id);
+
+        if (isNull(user)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(user).build();
+    }
+
+    @GET
+    @Path("/search/{name}")
+    public Response search(@PathParam("name") String name) {
+        User user = User.find("name", name).firstResult();
+
+        if (isNull(user)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.ok(user).build();
     }
 
     @POST
@@ -45,10 +76,19 @@ public class UserResource {
         return Response.status(Response.Status.CREATED.getStatusCode()).entity(user).build();
     }
 
-    @GET
-    public Response listAllUsers() {
-        PanacheQuery<User> query = User.findAll();
-        return Response.ok(query.list()).build();
+    @PUT
+    @Path("{id}")
+    @Transactional
+    public Response updateUser(@PathParam("id") Long id, CreateUserRequest userData) {
+        User user = User.findById(id);
+
+        if (user != null) {
+            user.setName(userData.getName());
+            user.setAge(userData.getAge());
+
+            return Response.noContent().build();
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @DELETE
@@ -64,18 +104,5 @@ public class UserResource {
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    @PUT
-    @Path("{id}")
-    @Transactional
-    public Response updateUser(@PathParam("id") Long id, CreateUserRequest userData) {
-        User user = User.findById(id);
 
-        if (user != null) {
-            user.setName(userData.getName());
-            user.setAge(userData.getAge());
-
-            return Response.noContent().build();
-        }
-        return Response.status(Response.Status.NOT_FOUND).build();
-    }
 }

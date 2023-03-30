@@ -23,6 +23,10 @@ Para executar o projeto em modo dev, no terminal execute:
 
 > **_NOTE:_**  Para acessar a Dev UI do quarkus http://localhost:8080/q/dev/.
 
+## Swagger
+
+Após executar a aplicação vá até a seguinte url: http://localhost:8080/q/swagger-ui
+
 ## Empacotando e executando a aplicação
 
 Use esse comando para empacotar a aplicação:

@@ -138,7 +138,7 @@ class UserResourceTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     @DisplayName("sould be not found status when name of user not exists")
     void searchNotFoundName() {
         given()
@@ -151,7 +151,7 @@ class UserResourceTest {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     @DisplayName("sould be update user")
     void updateUser() {
         var user = new CreateUserRequest();
@@ -169,7 +169,7 @@ class UserResourceTest {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     @DisplayName("sould be update user not found")
     void updateUserNotExists() {
         var user = new CreateUserRequest();
@@ -187,7 +187,7 @@ class UserResourceTest {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     @DisplayName("sould be update return invalid fields")
     void updateUserInvalidFields() {
         var user = new CreateUserRequest();
@@ -207,5 +207,31 @@ class UserResourceTest {
         List<Map<String, String>> errors = response.jsonPath().getList("errors");
         assertNotNull(errors.get(0).get("message"));
         assertNotNull(errors.get(1).get("message"));
+    }
+
+    @Test
+    @Order(12)
+    @DisplayName("sould be deleted user with exists")
+    void deleteUser() {
+        given()
+            .pathParam("id", "1")
+            .contentType(ContentType.JSON)
+        .when()
+            .delete(apiUrl + "/{id}")
+        .then()
+            .statusCode(204);
+    }
+
+    @Test
+    @Order(13)
+    @DisplayName("sould be not deleted user with not exists")
+    void deleteUserWithNotExists() {
+        given()
+            .pathParam("id", "1")
+            .contentType(ContentType.JSON)
+        .when()
+            .delete(apiUrl + "/{id}")
+        .then()
+            .statusCode(404);
     }
 }

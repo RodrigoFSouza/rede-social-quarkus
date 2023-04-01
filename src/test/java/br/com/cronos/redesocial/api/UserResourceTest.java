@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -23,13 +23,7 @@ class UserResourceTest {
     @TestHTTPResource("/api/v1/users")
     URL apiUrl;
 
-    @Test
-    void get() {
-    }
-
-    @Test
-    void search() {
-    }
+    Long idUserCreated;
 
     @Test
     @Order(1)
@@ -62,6 +56,7 @@ class UserResourceTest {
 
         assertEquals(201, response.getStatusCode());
         assertNotNull(response.jsonPath().getString("id"));
+        idUserCreated = Long.parseLong(response.jsonPath().getString("id"));
     }
 
     @Test
@@ -100,6 +95,117 @@ class UserResourceTest {
     }
 
     @Test
+    @Order(5)
+    @DisplayName("sould be not null user retorned")
+    void get() {
+        given()
+                .pathParam("id", "1")
+                .contentType(ContentType.JSON)
+        .when()
+                .get(apiUrl + "/{id}")
+        .then()
+                .statusCode(200)
+                .body("name", equalTo("joao"))
+                .body("age", equalTo(33));
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("sould be not found status when id of user not exists")
+    void getIdNotFound() {
+        given()
+            .pathParam("id", "999")
+            .contentType(ContentType.JSON)
+        .when()
+            .get(apiUrl + "/{id}")
+        .then()
+            .statusCode(404);
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("sould be search of name and user retorned")
+    void search() {
+        given()
+                .pathParam("name", "joao")
+                .contentType(ContentType.JSON)
+        .when()
+            .get(apiUrl + "/search/{name}")
+        .then()
+            .statusCode(200)
+            .body("name", equalTo("joao"))
+            .body("age", equalTo(33));
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("sould be not found status when name of user not exists")
+    void searchNotFoundName() {
+        given()
+            .pathParam("name", "pedro")
+            .contentType(ContentType.JSON)
+        .when()
+            .get(apiUrl + "/search/{name}")
+        .then()
+            .statusCode(404);
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("sould be update user")
     void updateUser() {
+        var user = new CreateUserRequest();
+        user.setName("joao de souza");
+        user.setAge(34);
+
+        given()
+            .pathParam("id", "1")
+            .contentType(ContentType.JSON)
+            .body(user)
+        .when()
+            .put(apiUrl + "/{id}")
+        .then()
+            .statusCode(204);
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("sould be update user not found")
+    void updateUserNotExists() {
+        var user = new CreateUserRequest();
+        user.setName("joao de souza");
+        user.setAge(34);
+
+        given()
+            .pathParam("id", "2")
+            .contentType(ContentType.JSON)
+            .body(user)
+        .when()
+            .put(apiUrl + "/{id}")
+        .then()
+            .statusCode(404);
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("sould be update return invalid fields")
+    void updateUserInvalidFields() {
+        var user = new CreateUserRequest();
+        user.setName(null);
+        user.setAge(null);
+
+        var response = given()
+            .pathParam("id", "1")
+            .contentType(ContentType.JSON)
+            .body(user)
+        .when()
+            .put(apiUrl + "/{id}")
+        .then()
+            .extract().response();
+
+        assertEquals(ResponseError.UNPROCESSABLE_ENTITY_STATUS, response.getStatusCode());
+        List<Map<String, String>> errors = response.jsonPath().getList("errors");
+        assertNotNull(errors.get(0).get("message"));
+        assertNotNull(errors.get(1).get("message"));
     }
 }

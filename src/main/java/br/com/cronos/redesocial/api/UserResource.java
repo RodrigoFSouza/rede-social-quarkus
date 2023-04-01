@@ -21,7 +21,7 @@ import static java.util.Objects.isNull;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    private Validator validator;
+    private final Validator validator;
 
     @Inject
     public UserResource(Validator validator) {
@@ -81,6 +81,13 @@ public class UserResource {
     @Transactional
     public Response updateUser(@PathParam("id") Long id, CreateUserRequest userData) {
         User user = User.findById(id);
+
+        Set<ConstraintViolation<CreateUserRequest>> violations = validator.validate(userData);
+        if (!violations.isEmpty()) {
+            return ResponseError
+                    .createFromValidation(violations)
+                    .withStatusCode(ResponseError.UNPROCESSABLE_ENTITY_STATUS);
+        }
 
         if (user != null) {
             user.setName(userData.getName());

@@ -65,9 +65,9 @@ public class PostResource {
 
         User follower = userRepository.findById(followerId);
 
-        if (isNull(followerId)) {
+        if (isNull(follower)) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Inexistent follower")
+                    .entity("Inexistent followerId")
                     .build();
         }
 

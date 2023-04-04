@@ -2,17 +2,25 @@ package br.com.cronos.redesocial.api;
 
 import br.com.cronos.redesocial.api.dto.CreateUserRequest;
 import br.com.cronos.redesocial.api.dto.ResponseError;
+import br.com.cronos.redesocial.domain.model.Follower;
+import br.com.cronos.redesocial.domain.model.User;
+import br.com.cronos.redesocial.domain.repository.FollowerRepository;
+import br.com.cronos.redesocial.domain.repository.PostRepository;
+import br.com.cronos.redesocial.domain.repository.UserRepository;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
 
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -25,6 +33,30 @@ class UserResourceTest {
 
     Long idUserCreated;
 
+    @Inject
+    UserRepository userRepository;
+
+    @Inject
+    FollowerRepository followerRepository;
+
+    @Inject
+    PostRepository postRepository;
+
+    @BeforeEach
+    @Transactional
+    void setUp() {
+        // Para garantir que outros testes não vão interferir neste aqui
+        postRepository.delete("delete from Post");
+        followerRepository.delete("delete from Follower");
+        userRepository.delete("delete from User");
+
+        var user = new User();
+        user.setAge(44);
+        user.setName("jose");
+        userRepository.persist(user);
+        idUserCreated = user.getId();
+    }
+
     @Test
     @Order(1)
     @DisplayName("sould be empty list when not users")
@@ -35,7 +67,7 @@ class UserResourceTest {
             .get(apiUrl)
         .then()
             .statusCode(200)
-        .body("size()", is(0));
+        .body("size()", is(1));
     }
 
     @Test
@@ -56,7 +88,6 @@ class UserResourceTest {
 
         assertEquals(201, response.getStatusCode());
         assertNotNull(response.jsonPath().getString("id"));
-        idUserCreated = Long.parseLong(response.jsonPath().getString("id"));
     }
 
     @Test
@@ -99,14 +130,14 @@ class UserResourceTest {
     @DisplayName("sould be not null user retorned")
     void get() {
         given()
-                .pathParam("id", "1")
+                .pathParam("id", idUserCreated)
                 .contentType(ContentType.JSON)
         .when()
                 .get(apiUrl + "/{id}")
         .then()
                 .statusCode(200)
-                .body("name", equalTo("joao"))
-                .body("age", equalTo(33));
+                .body("name", equalTo("jose"))
+                .body("age", equalTo(44));
     }
 
     @Test
@@ -127,14 +158,14 @@ class UserResourceTest {
     @DisplayName("sould be search of name and user retorned")
     void search() {
         given()
-                .pathParam("name", "joao")
+                .pathParam("name", "jose")
                 .contentType(ContentType.JSON)
         .when()
             .get(apiUrl + "/search/{name}")
         .then()
             .statusCode(200)
-            .body("name", equalTo("joao"))
-            .body("age", equalTo(33));
+            .body("name", equalTo("jose"))
+            .body("age", equalTo(44));
     }
 
     @Test
@@ -159,7 +190,7 @@ class UserResourceTest {
         user.setAge(34);
 
         given()
-            .pathParam("id", "1")
+            .pathParam("id", idUserCreated)
             .contentType(ContentType.JSON)
             .body(user)
         .when()
@@ -214,7 +245,7 @@ class UserResourceTest {
     @DisplayName("sould be deleted user with exists")
     void deleteUser() {
         given()
-            .pathParam("id", "1")
+            .pathParam("id", idUserCreated)
             .contentType(ContentType.JSON)
         .when()
             .delete(apiUrl + "/{id}")

@@ -30,6 +30,8 @@ class FollowerResourceTest {
     Long userId;
     Long followerId;
 
+    Long followerTwoId;
+
     @BeforeEach
     @Transactional
     void setUp() {
@@ -44,6 +46,12 @@ class FollowerResourceTest {
         follower.setName("pedro");
         userRepository.persist(follower);
         followerId = follower.getId();
+
+        var followerTwo = new User();
+        follower.setAge(34);
+        follower.setName("marieta");
+        userRepository.persist(followerTwo);
+        followerTwoId = followerTwo.getId();
 
         var followerEntity = new Follower();
         followerEntity.setFollower(follower);
@@ -97,6 +105,40 @@ class FollowerResourceTest {
             .contentType(ContentType.JSON)
             . body(follower)
             .pathParam("userId", userId)
+        .when()
+            .put()
+        .then()
+            .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("should be return 404 on follower is not found")
+    void followUserNotFoundTest() {
+        var follower = new FollowerRequest();
+        // follow not found
+        follower.setFollowerId(999L);
+
+        given()
+            .contentType(ContentType.JSON)
+            . body(follower)
+            .pathParam("userId", userId)
+        .when()
+            .put()
+        .then()
+            .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("should return nocontent if included follower exists")
+    @Transactional
+    void userIncludeFollwerTest() {
+        var followerRequest = new FollowerRequest();
+        followerRequest.setFollowerId(followerTwoId);
+
+        given()
+            .contentType(ContentType.JSON)
+            .pathParam("userId", userId)
+            .body(followerRequest)
         .when()
             .put()
         .then()

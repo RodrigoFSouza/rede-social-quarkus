@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+
+  postgres-social:
+    image: postgres:15.2
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    ports:
+      - "5433:5432"

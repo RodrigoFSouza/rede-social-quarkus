@@ -28,6 +28,13 @@ public class AddressResource {
         return Response.ok(results).build();
     }
 
+    @GET
+    @Path("/address")
+    public Response listAllAdrress() {
+        List<Address> results = Address.listAll();
+        return Response.ok(results).build();
+    }
+
     @POST
     @Path("{userId}/address")
     @Transactional

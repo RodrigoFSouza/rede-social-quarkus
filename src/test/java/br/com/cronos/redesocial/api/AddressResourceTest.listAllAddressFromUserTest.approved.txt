@@ -1,0 +1,1 @@
+[{"city":"Maringá","district":"Centro","id":1,"number":"99","state":"Paraná","street":"Av. Brasil","zipcode":"87083-090"},{"city":"Maringá","district":"Centro","id":2,"number":"101","state":"Paraná","street":"Av. Paraná","zipcode":"87083-100"},{"city":"Curitiba","district":"Boqueirão","id":3,"number":"102","state":"Paraná","street":"Av. Colombo","zipcode":"87083-120"}]

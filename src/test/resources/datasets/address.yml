@@ -1,0 +1,22 @@
+address:
+  - id: 1
+    street: Av. Brasil
+    state: Paraná
+    city: Maringá
+    number: 99
+    zipcode: 87083-090
+    district: Centro
+  - id: 2
+    street: Av. Paraná
+    state: Paraná
+    city: Maringá
+    number: 101
+    zipcode: 87083-100
+    district: Centro
+  - id: 3
+    street: Av. Colombo
+    state: Paraná
+    city: Curitiba
+    number: 102
+    zipcode: 87083-120
+    district: Boqueirão

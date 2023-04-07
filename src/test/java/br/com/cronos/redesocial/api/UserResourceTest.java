@@ -2,7 +2,6 @@ package br.com.cronos.redesocial.api;
 
 import br.com.cronos.redesocial.api.dto.CreateUserRequest;
 import br.com.cronos.redesocial.api.dto.ResponseError;
-import br.com.cronos.redesocial.domain.model.Follower;
 import br.com.cronos.redesocial.domain.model.User;
 import br.com.cronos.redesocial.domain.repository.FollowerRepository;
 import br.com.cronos.redesocial.domain.repository.PostRepository;
@@ -67,7 +66,7 @@ class UserResourceTest {
             .get(apiUrl)
         .then()
             .statusCode(200)
-        .body("size()", is(1));
+            .body("size()", is(1));
     }
 
     @Test

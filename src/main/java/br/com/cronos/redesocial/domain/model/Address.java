@@ -1,14 +1,16 @@
 package br.com.cronos.redesocial.domain.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "address")
 public class Address extends PanacheEntityBase {
@@ -21,6 +23,7 @@ public class Address extends PanacheEntityBase {
     private String number;
     private String zipcode;
     private String district;
+    private String complement;
     @OneToOne
     private User user;
     @CreationTimestamp

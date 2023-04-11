@@ -1,21 +1,30 @@
 package br.com.cronos.redesocial.api;
 
+import br.com.cronos.redesocial.api.dto.AddressResponse;
 import br.com.cronos.redesocial.api.dto.CreateAddressRequest;
+import br.com.cronos.redesocial.api.dto.UpdateAddressRequest;
+import br.com.cronos.redesocial.api.dto.mapper.AddressMapper;
 import br.com.cronos.redesocial.domain.model.Address;
 import br.com.cronos.redesocial.domain.model.User;
 import io.quarkus.panache.common.Sort;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Path("/api/v1/users/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class AddressResource {
+
+    @Inject
+    AddressMapper addressMapper;
+
     @GET
     @Path("{userId}/address")
     public Response listAllAdrress(@PathParam("userId") Long userId) {
@@ -24,15 +33,11 @@ public class AddressResource {
             throw new NotFoundException("User not found");
         }
 
-        List<Address> results = Address.find("user", Sort.by("id"), userOp.get()).list();
-        return Response.ok(results).build();
-    }
-
-    @GET
-    @Path("/address")
-    public Response listAllAdrress() {
-        List<Address> results = Address.listAll();
-        return Response.ok(results).build();
+        List<Address> results = Address.list("user", Sort.by("id"), userOp.get());
+        List<AddressResponse> responseResult = results.stream()
+                .map(a -> addressMapper.toResponse(a))
+                .collect(Collectors.toList());
+        return Response.ok(responseResult).build();
     }
 
     @POST
@@ -43,13 +48,7 @@ public class AddressResource {
         if (userOp.isEmpty()) {
             throw new NotFoundException("User not found");
         }
-        var address = new Address();
-        address.setStreet(request.getStreet());
-        address.setNumber(request.getNumber());
-        address.setCity(request.getCity());
-        address.setDistrict(request.getDistrict());
-        address.setState(request.getState());
-        address.setZipcode(request.getZipcode());
+        Address address = addressMapper.toAddress(request);
         address.setUser(userOp.get());
         Address.persist(address);
 
@@ -59,7 +58,7 @@ public class AddressResource {
     @PUT
     @Path("{userId}/address/{id}")
     @Transactional
-    public Response updateAddress(@PathParam("userId") Long userId, @PathParam("id") Long id, Address address) {
+    public Response updateAddress(@PathParam("userId") Long userId, @PathParam("id") Long id, UpdateAddressRequest request) {
         Optional<Address> addressOp = Address.findByIdOptional(id);
         if (addressOp.isEmpty()) {
             throw new NotFoundException();
@@ -75,12 +74,7 @@ public class AddressResource {
             throw new BadRequestException("User this reques is diferent of address persisted");
         }
 
-        addressUpdate.setCity(address.getCity());
-        addressUpdate.setState(address.getState());
-        addressUpdate.setStreet(address.getStreet());
-        addressUpdate.setZipcode(address.getZipcode());
-        addressUpdate.setNumber(address.getNumber());
-        addressUpdate.setDistrict(address.getDistrict());
+        addressMapper.toAddress(request, addressUpdate);
 
         Address.persist(addressUpdate);
 

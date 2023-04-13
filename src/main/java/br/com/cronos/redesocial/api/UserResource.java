@@ -4,7 +4,12 @@ import br.com.cronos.redesocial.api.dto.CreateUserRequest;
 import br.com.cronos.redesocial.api.dto.ResponseError;
 import br.com.cronos.redesocial.domain.model.User;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlow;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
@@ -19,6 +24,8 @@ import static java.util.Objects.isNull;
 @Path("/api/v1/users")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@RolesAllowed("proprietario")
+@SecurityScheme(securitySchemeName = "rede-social-oauth", type = SecuritySchemeType.OAUTH2, flows = @OAuthFlows(password = @OAuthFlow(tokenUrl = "http://localhost:8180/auth/realms/rede-social/protocol/openid-connect/token")))
 public class UserResource {
 
     private final Validator validator;

@@ -10,3 +10,12 @@ services:
       POSTGRES_USER: postgres
     ports:
       - "5433:5432"
+
+  keycloak-social:
+    container_name: keycloak-rede-social
+    image: jboss/keycloak:latest
+    environment:
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_USER: admin
+    ports:
+      - "8180:8080"

@@ -25,7 +25,7 @@ import static java.util.Objects.isNull;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @RolesAllowed("proprietario")
-@SecurityScheme(securitySchemeName = "rede-social-oauth", type = SecuritySchemeType.OAUTH2, flows = @OAuthFlows(password = @OAuthFlow(tokenUrl = "http://localhost:8180/auth/realms/rede-social/protocol/openid-connect/token")))
+//@SecurityScheme(securitySchemeName = "rede-social-oauth", type = SecuritySchemeType.OAUTH2, flows = @OAuthFlows(password = @OAuthFlow(tokenUrl = "http://localhost:8180/auth/realms/rede-social/protocol/openid-connect/token")))
 public class UserResource {
 
     private final Validator validator;
